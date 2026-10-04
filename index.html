@@ -98,6 +98,7 @@
     .gallery-grid img { height:100%; transition:transform .65s cubic-bezier(.2,.7,.2,1) }
     .gallery-grid figure:hover img { transform:scale(1.04) }
     .contact-section { background:#e9e9df }
+    .contact-card.no-map { grid-template-columns:1fr; max-width:760px; margin-inline:auto }
     .contact-card { display:grid; grid-template-columns:1fr 1fr; gap:50px; padding:clamp(28px,6vw,70px); border-radius:30px; background:var(--surface) }
     .contact-card h2 { margin:10px 0 16px; font-size:clamp(2.7rem,5vw,4.5rem); line-height:.98 }
     .contact-card p { color:var(--muted) }
@@ -173,7 +174,7 @@
           <span class="eyebrow" data-fill="eyebrow">[TIPO DE NEGOCIO] · [UBICACIÓN]</span>
           <h1 class="serif" data-fill="headline">[PROMESA PRINCIPAL DEL NEGOCIO]</h1>
           <p data-fill="intro">[Cuenta en una o dos frases qué ofrece el negocio y por qué debería importarle al cliente.]</p>
-          <div class="hero-actions"><a class="button" href="#oferta">[CTA PRINCIPAL]</a><a class="button light" href="#contacto">Cómo llegar</a></div>
+          <div class="hero-actions"><a class="button" data-link="contact" href="#" target="_blank" rel="noopener">[CTA PRINCIPAL]</a><a class="button light" href="#contacto">Cómo llegar</a></div>
           <div class="hero-note"><span class="note-line"></span><span data-fill="note">[DETALLE REAL QUE DÉ CONFIANZA: horario, años, especialidad]</span></div>
         </div>
         <div class="hero-visual reveal delay">
@@ -279,11 +280,11 @@
     document.getElementById("features").innerHTML = SITE.features.map(x => '<div class="feature"><strong>' + x.value + '</strong><span>' + x.label + '</span></div>').join("");
     const filters = document.getElementById("filters");
     const items = document.getElementById("items");
-    let active = "Todo";
+    let active = SITE.categories[0];
     filters.innerHTML = SITE.categories.map((c,i) => '<button class="filter ' + (!i?'active':'') + '" type="button" data-category="' + c + '">' + c + '</button>').join("");
     function renderItems() {
       const q = document.getElementById("search").value.trim().toLocaleLowerCase("es");
-      const found = SITE.items.filter(x => (active === "Todo" || x.category === active) && (x.name + " " + (x.description||"") + " " + x.category).toLocaleLowerCase("es").includes(q));
+      const found = SITE.items.filter(x => (active === SITE.categories[0] || x.category === active) && (x.name + " " + (x.description||"") + " " + x.category).toLocaleLowerCase("es").includes(q));
       items.innerHTML = found.length ? found.map(x => '<article class="menu-item"><div><p>' + x.name + '</p>' + (x.description ? '<small>' + x.description + '</small>' : '') + '</div><span class="menu-price">' + x.price + '</span></article>').join("") : '<p class="empty">No encontramos resultados.</p>';
     }
     filters.addEventListener("click", e => {
@@ -294,7 +295,7 @@
     document.getElementById("gallery").innerHTML = SITE.images.gallery.slice(0,4).map((src,i) => '<figure><img src="' + src + '" alt="Foto ' + (i+1) + ' de ' + SITE.name + '" loading="lazy"></figure>').join("");
     document.getElementById("details").innerHTML = [['Dirección',SITE.address],['Horario',SITE.hours],['Teléfono',SITE.phone]].map(([label,value]) => '<div class="detail"><small>' + label + '</small>' + value + '</div>').join("");
     if (SITE.mapEmbed) document.getElementById("map").innerHTML = '<iframe title="Mapa de ubicación de ' + SITE.name + '" src="' + SITE.mapEmbed + '" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>';
-    else document.getElementById("map").style.display = "none";
+    else { document.getElementById("map").style.display = "none"; document.querySelector(".contact-card").classList.add("no-map"); }
     document.getElementById("year").textContent = new Date().getFullYear();
     const menuToggle = document.getElementById("menuToggle"), nav = document.getElementById("nav");
     menuToggle.addEventListener("click", () => { const open = nav.classList.toggle("open"); menuToggle.setAttribute("aria-expanded", String(open)); menuToggle.textContent = open ? "×" : "☰"; });
